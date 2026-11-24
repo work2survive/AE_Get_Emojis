@@ -968,10 +968,14 @@ def compile_svg_file(svg_path, source_type="openmoji_color"):
     vb_w = vb_nums[2] if len(vb_nums) >= 4 else 72.0
     vb_h = vb_nums[3] if len(vb_nums) >= 4 else 72.0
 
-    # Normalize to 72x72 centered at (0, 0) -> [-36..36]
-    scale_x = 72.0 / vb_w
-    scale_y = 72.0 / vb_h
-    root_mat = [scale_x, 0.0, 0.0, scale_y, -36.0, -36.0]
+    # Normalize to 72x72 em-box centered at (0, 0)
+    # OpenMoji has 46x46 optical glyph within 72x72 viewBox -> [-23..23]
+    # Twemoji viewBox is 36x36 edge-to-edge; target 46x46 optical glyph centered at (0,0) -> [-23..23]
+    target_dim = 46.0 if source_type == "twemoji_color" else 72.0
+    half_dim = target_dim / 2.0
+    scale_x = target_dim / vb_w
+    scale_y = target_dim / vb_h
+    root_mat = [scale_x, 0.0, 0.0, scale_y, -half_dim, -half_dim]
 
     shapes = []
 
